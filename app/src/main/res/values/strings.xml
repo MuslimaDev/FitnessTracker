@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">FitnessTracker</string>
+    <string name="app_name">Stepz</string>
+    <string name="mapbox_access_token">pk.eyJ1IjoibXVzbGltYTIyIiwiYSI6ImNqcmF1M2NoZTB0ams0NW1sbjBhOHdkMmIifQ.s2hHOWSDQjFX0FXi6ckSoA</string>
+
 </resources>
