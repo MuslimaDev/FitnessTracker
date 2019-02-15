@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.example.fitnesstracker.R;
 import com.example.fitnesstracker.utils.PermissionUtils;
@@ -27,6 +28,8 @@ import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.LocationComponentOptions;
@@ -42,16 +45,15 @@ import com.mapbox.mapboxsdk.maps.Style;
 
 import java.util.List;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, OnLocationClickListener, LocationListener, PermissionsListener, OnCameraTrackingChangedListener {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener, OnLocationClickListener, LocationListener, PermissionsListener, OnCameraTrackingChangedListener {
 
     private PermissionsManager permissionsManager;
     private MapView mapView;
     private MapboxMap mapboxMap;
     private LocationComponent locationComponent;
-    private Button stopButton;
+    private Button stopButton, startButton;
     private double lat, lng;
-    private Marker marker;
-
+    private ImageView imageView;
 
     @SuppressLint("MissingPermission")
     @Override
@@ -64,14 +66,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
-        Button startButton = findViewById(R.id.startButton);
-        stopButton = findViewById(R.id.stopButton);
+        imageView = findViewById(R.id.myLocation);
+        imageView.setOnClickListener(this);
 
-        startButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                stopButton.setVisibility(View.VISIBLE);
-            }
-        });
+        startButton = findViewById(R.id.startButton);
+        startButton.setOnClickListener(this);
+
+        stopButton = findViewById(R.id.stopButton);
+        stopButton.setOnClickListener(this);
+
     }
 
     @Override
@@ -85,12 +88,38 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
 
         Icon icon = IconFactory.getInstance(MapActivity.this).fromResource(R.drawable.placeholder);
-        marker = mapboxMap.addMarker(new MarkerOptions()
+        Marker marker = mapboxMap.addMarker(new MarkerOptions()
                 .position(new LatLng(lat, lng))
                 .title("Current Location")
                 .icon(icon));
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.myLocation:
+                cameraUpdate(locationComponent);
+                break;
+            case R.id.startButton:
+                stopButton.setVisibility(View.VISIBLE);
+                break;
+            case R.id.stopButton:
+                stopButton.setVisibility(View.INVISIBLE);
+                break;
+        }
+    }
+
+
+    private void cameraUpdate(LocationComponent locationComponent) {
+        if (mapboxMap != null) {
+            Log.d("LocCameraUpdate", String.valueOf(lat + lng));
+            CameraPosition position = new CameraPosition.Builder()
+                    .target(new LatLng(lat - 0.01, lng))
+                    .bearing(0)
+                    .zoom(13).tilt(15).build();
+            mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position));
+        }
+    }
 
     @SuppressLint("MissingPermission")
     private void enableLocationComponent(@NonNull Style loadedMapStyle) {
