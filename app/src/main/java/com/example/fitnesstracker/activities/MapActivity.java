@@ -1,22 +1,40 @@
 package com.example.fitnesstracker.activities;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import com.example.fitnesstracker.R;
+import com.example.fitnesstracker.utils.PermissionUtils;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
+import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.LocationComponentOptions;
 import com.mapbox.mapboxsdk.location.OnCameraTrackingChangedListener;
 import com.mapbox.mapboxsdk.location.OnLocationClickListener;
 import com.mapbox.mapboxsdk.location.modes.CameraMode;
 import com.mapbox.mapboxsdk.location.modes.RenderMode;
+import com.mapbox.mapboxsdk.log.Logger;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
@@ -24,14 +42,18 @@ import com.mapbox.mapboxsdk.maps.Style;
 
 import java.util.List;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, OnLocationClickListener, PermissionsListener, OnCameraTrackingChangedListener {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, OnLocationClickListener, LocationListener, PermissionsListener, OnCameraTrackingChangedListener {
 
     private PermissionsManager permissionsManager;
     private MapView mapView;
     private MapboxMap mapboxMap;
     private LocationComponent locationComponent;
     private Button stopButton;
+    private double lat, lng;
+    private Marker marker;
 
+
+    @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,21 +83,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 enableLocationComponent(style);
             }
         });
+
+        Icon icon = IconFactory.getInstance(MapActivity.this).fromResource(R.drawable.placeholder);
+        marker = mapboxMap.addMarker(new MarkerOptions()
+                .position(new LatLng(lat, lng))
+                .title("Current Location")
+                .icon(icon));
     }
 
-    @SuppressWarnings({"MissingPermission"})
+
+    @SuppressLint("MissingPermission")
     private void enableLocationComponent(@NonNull Style loadedMapStyle) {
         if (PermissionsManager.areLocationPermissionsGranted(this)) {
-
-            LocationComponentOptions options = LocationComponentOptions.builder(this)
-                    .elevation(5)
-                    .accuracyAlpha(.6f)
-                    .accuracyColor(Color.RED)
-                    .foregroundDrawable(R.drawable.placeholder)
-                    .build();
-
             locationComponent = mapboxMap.getLocationComponent();
-            locationComponent.activateLocationComponent(this, loadedMapStyle, options);
+            locationComponent.activateLocationComponent(this, loadedMapStyle);
             locationComponent.setLocationComponentEnabled(true);
             locationComponent.setCameraMode(CameraMode.TRACKING);
             locationComponent.setRenderMode(RenderMode.COMPASS);
@@ -118,12 +139,33 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+
     @Override
     public void onCameraTrackingChanged(int currentMode) {
     }
 
     @Override
     public void onExplanationNeeded(List<String> permissionsToExplain) {
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 
     @SuppressWarnings({"MissingPermission"})
