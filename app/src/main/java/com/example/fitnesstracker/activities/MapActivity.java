@@ -1,28 +1,22 @@
 package com.example.fitnesstracker.activities;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
-import android.graphics.Color;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.example.fitnesstracker.R;
-import com.example.fitnesstracker.utils.PermissionUtils;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
-import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
@@ -32,12 +26,10 @@ import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.LocationComponent;
-import com.mapbox.mapboxsdk.location.LocationComponentOptions;
 import com.mapbox.mapboxsdk.location.OnCameraTrackingChangedListener;
 import com.mapbox.mapboxsdk.location.OnLocationClickListener;
 import com.mapbox.mapboxsdk.location.modes.CameraMode;
 import com.mapbox.mapboxsdk.location.modes.RenderMode;
-import com.mapbox.mapboxsdk.log.Logger;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
@@ -54,6 +46,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private Button stopButton, startButton;
     private double lat, lng;
     private ImageView imageView;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
+    private Location location;
+    private LinearLayout firstLL, secondLL;
+    private Chronometer chronometer;
 
     @SuppressLint("MissingPermission")
     @Override
@@ -75,6 +72,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         stopButton = findViewById(R.id.stopButton);
         stopButton.setOnClickListener(this);
 
+        firstLL = findViewById(R.id.linearLayoutOne);
+        secondLL = findViewById(R.id.linearLayoutTwo);
+        chronometer = findViewById(R.id.chronometer);
+
+        showLocation(location);
     }
 
     @Override
@@ -89,7 +91,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         Icon icon = IconFactory.getInstance(MapActivity.this).fromResource(R.drawable.placeholder);
         Marker marker = mapboxMap.addMarker(new MarkerOptions()
-                .position(new LatLng(lat, lng))
+                .position(new LatLng(42.8700000, 74.5900000))
                 .title("Current Location")
                 .icon(icon));
     }
@@ -102,9 +104,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 break;
             case R.id.startButton:
                 stopButton.setVisibility(View.VISIBLE);
+                firstLL.setVisibility(View.VISIBLE);
+                secondLL.setVisibility(View.VISIBLE);
+                chronometer.start();
                 break;
             case R.id.stopButton:
                 stopButton.setVisibility(View.INVISIBLE);
+                firstLL.setVisibility(View.INVISIBLE);
+                secondLL.setVisibility(View.INVISIBLE);
+                chronometer.stop();
                 break;
         }
     }
@@ -112,9 +120,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void cameraUpdate(LocationComponent locationComponent) {
         if (mapboxMap != null) {
-            Log.d("LocCameraUpdate", String.valueOf(lat + lng));
             CameraPosition position = new CameraPosition.Builder()
-                    .target(new LatLng(lat - 0.01, lng))
+                    .target(new LatLng(42.8700000, 74.5900000))
                     .bearing(0)
                     .zoom(13).tilt(15).build();
             mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position));
@@ -151,7 +158,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 10) {
+            showLocation(location);
+        }
     }
 
     @Override
@@ -164,6 +174,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 }
             });
         } else {
+            finish();
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    public void showLocation(Location location) {
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        //   locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000 * 10, 10, locationListener);
+        if (location != null) {
+            Intent intent = new Intent();
+            intent.putExtra("location1", location.getLatitude());
+            intent.putExtra("location2", location.getLongitude());
+            startActivity(intent);
             finish();
         }
     }
@@ -187,9 +210,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onProviderEnabled(String provider) {
 
+        showLocation(locationManager.getLastKnownLocation(provider));
     }
 
     @Override
@@ -197,7 +222,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
-    @SuppressWarnings({"MissingPermission"})
     protected void onStart() {
         super.onStart();
         mapView.onStart();

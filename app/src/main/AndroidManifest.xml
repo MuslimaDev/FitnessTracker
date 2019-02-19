@@ -23,7 +23,6 @@
         </activity>
 
         <activity android:name=".activities.MapActivity"/>
-        <activity android:name=".activities.DistanceReportActivity" />
         <activity android:name=".activities.ConnectedDevicesActivity"/>
         <activity android:name=".activities.RoutesHistoryActivity"/>
 

@@ -8,7 +8,7 @@
     tools:context=".activities.MainActivity">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/history"
         android:layout_width="210dp"
         android:layout_height="210dp"
         android:layout_marginStart="8dp"
@@ -35,10 +35,10 @@
         android:text="HISTORY"
         android:textColor="#fff"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/imageView5"
+        app:layout_constraintBottom_toTopOf="@+id/connectedDevices"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/history"
         app:layout_constraintVertical_bias="0.473" />
 
     <TextView
@@ -57,7 +57,7 @@
         app:layout_constraintBottom_toTopOf="@+id/plusButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView5"
+        app:layout_constraintTop_toBottomOf="@+id/connectedDevices"
         app:layout_constraintVertical_bias="0.266" />
 
     <Button
@@ -83,7 +83,7 @@
         tools:ignore="MissingConstraints" />
 
     <ImageView
-        android:id="@+id/imageView5"
+        android:id="@+id/connectedDevices"
         android:layout_width="210dp"
         android:layout_height="210dp"
         android:layout_marginStart="8dp"
