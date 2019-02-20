@@ -1,3 +1,4 @@
+/*
 package com.example.fitnesstracker.activities;
 
 import android.annotation.SuppressLint;
@@ -112,7 +113,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 stopButton.setVisibility(View.INVISIBLE);
                 firstLL.setVisibility(View.INVISIBLE);
                 secondLL.setVisibility(View.INVISIBLE);
-                chronometer.stop();
+                chronometer.setFormat(null);
                 break;
         }
     }
@@ -262,4 +263,4 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onLowMemory();
         mapView.onLowMemory();
     }
-}
+}*/

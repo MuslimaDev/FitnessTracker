@@ -18,33 +18,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-     /*   history = findViewById(R.id.history);
-        history.setOnClickListener(this);
-
-        connectedDevices = findViewById(R.id.connectedDevices);
-        connectedDevices.setOnClickListener(this);*/
-
         plusButton = findViewById(R.id.plusButton);
-
         plusButton.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.history:
-                Intent intent = new Intent(MainActivity.this, RoutesHistoryActivity.class);
-                startActivity(intent);
-                break;
-            case R.id.connectedDevices:
-                Intent intentTwo = new Intent(MainActivity.this, ConnectedDevicesActivity.class);
-                startActivity(intentTwo);
-                break;
-            case R.id.plusButton:
-                Intent intentThree = new Intent(MainActivity.this, MapActivity.class);
+                Intent intentThree = new Intent(MainActivity.this, ActivityOne.class);
                 startActivity(intentThree);
-                break;
-        }
     }
 
 }

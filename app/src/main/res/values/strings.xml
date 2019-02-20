@@ -1,5 +1,4 @@
 <resources>
     <string name="app_name">Stepz</string>
-    <string name="mapbox_access_token">pk.eyJ1IjoibXVzbGltYTIyIiwiYSI6ImNqcmF1M2NoZTB0ams0NW1sbjBhOHdkMmIifQ.s2hHOWSDQjFX0FXi6ckSoA</string>
-
+    <string name="google_api_key">AIzaSyDQlbQN3jOmeUywMp4utk43RpsW4ucKdyc</string>
 </resources>
