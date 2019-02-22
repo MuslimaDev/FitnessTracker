@@ -13,6 +13,10 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Chronometer;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.fitnesstracker.R;
@@ -23,22 +27,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
- class MapActivity extends FragmentActivity implements OnMapReadyCallback {
+class MapActivity extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener {
 
     private GoogleMap mMap;
-    LocationManager locationManager;
-    LocationListener locationListener;
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-            }
-        }
-    }
+    private LocationManager locationManager;
+    private LocationListener locationListener;
+    private Button stopButton, startButton;
+    private LinearLayout firstLL, secondLL;
+    private Chronometer chronometer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +43,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        startButton = findViewById(R.id.startButton);
+        startButton.setOnClickListener(this);
+
+        stopButton = findViewById(R.id.stopButton);
+        stopButton.setOnClickListener(this);
+
+        firstLL = findViewById(R.id.linearLayoutOne);
+        secondLL = findViewById(R.id.linearLayoutTwo);
+        chronometer = findViewById(R.id.chronometer);
     }
 
     @SuppressLint("MissingPermission")
@@ -54,7 +60,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        locationManager  = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -63,7 +69,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
                 LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
-                mMap.addMarker(new MarkerOptions().position(userLocation).title("Marker"));
+                mMap.addMarker(new MarkerOptions()
+                        .position(userLocation)
+                        .title("Marker"));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
 
                 Toast.makeText(MapActivity.this, userLocation.toString(), Toast.LENGTH_SHORT).show();
@@ -85,11 +93,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
             }
         };
 
-        if (Build.VERSION.SDK_INT < 23 ){
+        if (Build.VERSION.SDK_INT < 23) {
 
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 
-        }else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 
@@ -98,15 +106,41 @@ import com.google.android.gms.maps.model.MarkerOptions;
             LatLng userLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
 
             mMap.clear();
-            mMap.addMarker(new MarkerOptions()
-                    .position(userLocation)
-                    .title("Marker"));
-
+            mMap.addMarker(new MarkerOptions().position(userLocation).title("Marker"));
             mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
 
             Toast.makeText(MapActivity.this, userLocation.toString(), Toast.LENGTH_SHORT).show();
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+            }
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.startButton:
+                stopButton.setVisibility(View.VISIBLE);
+                firstLL.setVisibility(View.VISIBLE);
+                secondLL.setVisibility(View.VISIBLE);
+                chronometer.start();
+                break;
+            case R.id.stopButton:
+                stopButton.setVisibility(View.INVISIBLE);
+                firstLL.setVisibility(View.INVISIBLE);
+                secondLL.setVisibility(View.INVISIBLE);
+                chronometer.setFormat(null);
+                break;
         }
     }
 }
