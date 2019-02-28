@@ -1,146 +1,181 @@
 package com.example.fitnesstracker.activities;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.Context;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Build;
-import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.Chronometer;
-import android.widget.LinearLayout;
-import android.widget.Toast;
+
 
 import com.example.fitnesstracker.R;
+import com.example.fitnesstracker.models.CoordinateModel;
+import com.example.fitnesstracker.utils.Constants;
+import com.example.fitnesstracker.utils.PermissionUtils;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
-class MapActivity extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener {
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
-    private GoogleMap mMap;
-    private LocationManager locationManager;
-    private LocationListener locationListener;
-    private Button stopButton, startButton;
-    private LinearLayout firstLL, secondLL;
-    private Chronometer chronometer;
+import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
+
+
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener, Observer {
+    private ArrayList<CoordinateModel> mWalkedList = new ArrayList<>();
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private GoogleMap mGoogleMap;
+    private Marker mMarker;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        initMap();
+    }
+
+    private void initMap() {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        startButton = findViewById(R.id.startButton);
-        startButton.setOnClickListener(this);
-
-        stopButton = findViewById(R.id.stopButton);
-        stopButton.setOnClickListener(this);
-
-        firstLL = findViewById(R.id.linearLayoutOne);
-        secondLL = findViewById(R.id.linearLayoutTwo);
-        chronometer = findViewById(R.id.chronometer);
-    }
-
-    @SuppressLint("MissingPermission")
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-
-                mMap.clear();
-
-                LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-
-                mMap.addMarker(new MarkerOptions()
-                        .position(userLocation)
-                        .title("Marker"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
-
-                Toast.makeText(MapActivity.this, userLocation.toString(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-        };
-
-        if (Build.VERSION.SDK_INT < 23) {
-
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-
-        } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-
-            Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-            LatLng userLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-
-            mMap.clear();
-            mMap.addMarker(new MarkerOptions().position(userLocation).title("Marker"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
-
-            Toast.makeText(MapActivity.this, userLocation.toString(), Toast.LENGTH_SHORT).show();
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        }
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
 
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-            }
-        }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void locationRecived(Location location) {
+        MarkerOptions options = new MarkerOptions()
+                .position(new LatLng(location.getLatitude(), location.getLongitude()))
+                .icon(BitmapDescriptorFactory.defaultMarker());
+        mGoogleMap.clear();
+        mMarker = mGoogleMap.addMarker(options);
+
+        saveRoad(location);
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.startButton:
-                stopButton.setVisibility(View.VISIBLE);
-                firstLL.setVisibility(View.VISIBLE);
-                secondLL.setVisibility(View.VISIBLE);
-                chronometer.start();
-                break;
-            case R.id.stopButton:
-                stopButton.setVisibility(View.INVISIBLE);
-                firstLL.setVisibility(View.INVISIBLE);
-                secondLL.setVisibility(View.INVISIBLE);
-                chronometer.setFormat(null);
-                break;
+
+    }
+
+    private void saveRoad(Location location) {
+        mWalkedList.add((new CoordinateModel(location)));
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mGoogleMap = googleMap;
+        startLocationService();
+        enableMyLocation();
+
+
+    }
+
+    LocationUpdateService mService;
+
+    private void startLocationService() {
+
+        ServiceConnection serviceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                mService = ((LocationUpdateService.LocalBinder) iBinder).getService();
+                mService.getLastLocation(new OnCompleteListener<Location>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Location> task) {
+                        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng
+                                (task.getResult().getLatitude(), task.getResult().getLongitude())));
+                    }
+                });
+
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                mService = null;
+            }
+
+        };
+        bindService(new Intent(this, LocationUpdateService.class), serviceConnection, BIND_AUTO_CREATE);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        chekLocationService();
+    }
+
+    private void chekLocationService() {
+        if (PermissionUtils.isLocationServicesEnabled(this)) {
+
+            enableMyLocation();
         }
+    }
+
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == Constants.REQUEST_CODE_LOCATION_PERMISSION) {
+            if (grantResults.length == 0) {
+
+                enableMyLocation();
+            }
+            if (grantResults == null) {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    startLocationService();
+                    enableMyLocation();
+                }
+            }
+
+        }
+
+    }
+
+    private void enableMyLocation() {
+        if (PermissionUtils.checkLocationPermission(this) && mGoogleMap != null) {
+            mGoogleMap.setMyLocationEnabled(true);
+            mGoogleMap.setMaxZoomPreference(18);
+            mGoogleMap.setMinZoomPreference(15);
+        }
+
+    }
+
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+
     }
 }
