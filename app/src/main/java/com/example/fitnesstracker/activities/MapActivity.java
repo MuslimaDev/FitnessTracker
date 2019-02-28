@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 
 
 import com.example.fitnesstracker.R;
@@ -39,12 +40,12 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener, Observer {
     private ArrayList<CoordinateModel> mWalkedList = new ArrayList<>();
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private GoogleMap mGoogleMap;
     private Marker mMarker;
+    private Button startButton, continueButton, stopButton, saveButton;
 
 
     @Override
@@ -52,6 +53,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         initMap();
+
+        startButton = findViewById(R.id.startButton);
+        startButton.setOnClickListener(this);
+
+        continueButton = findViewById(R.id.continueButton);
+
+        stopButton = findViewById(R.id.stopButton);
+
+        saveButton = findViewById(R.id.saveButton);
+        saveButton.setOnClickListener(this);
     }
 
     private void initMap() {
@@ -86,6 +97,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onClick(View v) {
+        switch(v.getId()){
+            case R.id.startButton:
+                stopButton.setVisibility(View.VISIBLE);
+                break;
+            case R.id.saveButton:
+                stopButton.setVisibility(View.INVISIBLE);
+                break;
+        }
 
     }
 
@@ -133,10 +152,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onResume() {
         super.onResume();
-        chekLocationService();
+        checkLocationService();
     }
 
-    private void chekLocationService() {
+    private void checkLocationService() {
         if (PermissionUtils.isLocationServicesEnabled(this)) {
 
             enableMyLocation();
