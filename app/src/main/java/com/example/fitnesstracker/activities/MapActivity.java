@@ -4,15 +4,22 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Chronometer;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 
+import com.akexorcist.googledirection.util.DirectionConverter;
 import com.example.fitnesstracker.R;
 import com.example.fitnesstracker.models.CoordinateModel;
 import com.example.fitnesstracker.utils.Constants;
@@ -29,6 +36,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -46,6 +54,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleMap mGoogleMap;
     private Marker mMarker;
     private Button startButton, continueButton, stopButton, saveButton;
+    private LinearLayout linearLayout;
+    private Chronometer chronometer;
+    private TextView distance;
+    private long lastPause;
 
 
     @Override
@@ -58,11 +70,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         startButton.setOnClickListener(this);
 
         continueButton = findViewById(R.id.continueButton);
+        continueButton.setOnClickListener(this);
 
         stopButton = findViewById(R.id.stopButton);
+        stopButton.setOnClickListener(this);
 
         saveButton = findViewById(R.id.saveButton);
         saveButton.setOnClickListener(this);
+
+        linearLayout = findViewById(R.id.linearLayout);
+
+        distance = findViewById(R.id.distance);
+
+        chronometer = findViewById(R.id.chronometer);
     }
 
     private void initMap() {
@@ -91,8 +111,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .icon(BitmapDescriptorFactory.defaultMarker());
         mGoogleMap.clear();
         mMarker = mGoogleMap.addMarker(options);
-
-        saveRoad(location);
     }
 
     @Override
@@ -100,16 +118,27 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         switch(v.getId()){
             case R.id.startButton:
                 stopButton.setVisibility(View.VISIBLE);
+                linearLayout.setVisibility(View.VISIBLE);
+                distance.setVisibility(View.VISIBLE);
+                chronometer.start();
+                break;
+            case R.id.stopButton:
+                mService.stopLocationUpdates();
+                lastPause = SystemClock.elapsedRealtime();
+                chronometer.stop();
+                mWalkedList.get(mWalkedList.size() - 1).setStop(true);
+                chronometer.setEnabled(false);
+                chronometer.setEnabled(true);
+                break;
+            case R.id.continueButton:
+                chronometer.start();
                 break;
             case R.id.saveButton:
                 stopButton.setVisibility(View.INVISIBLE);
+                linearLayout.setVisibility(View.INVISIBLE);
+                distance.setVisibility(View.INVISIBLE);
                 break;
         }
-
-    }
-
-    private void saveRoad(Location location) {
-        mWalkedList.add((new CoordinateModel(location)));
     }
 
     @Override
@@ -117,8 +146,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mGoogleMap = googleMap;
         startLocationService();
         enableMyLocation();
-
-
     }
 
     LocationUpdateService mService;
@@ -136,7 +163,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                 (task.getResult().getLatitude(), task.getResult().getLongitude())));
                     }
                 });
-
             }
 
             @Override
@@ -157,7 +183,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void checkLocationService() {
         if (PermissionUtils.isLocationServicesEnabled(this)) {
-
             enableMyLocation();
         }
     }
@@ -166,7 +191,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == Constants.REQUEST_CODE_LOCATION_PERMISSION) {
             if (grantResults.length == 0) {
-
                 enableMyLocation();
             }
             if (grantResults == null) {
@@ -175,9 +199,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     enableMyLocation();
                 }
             }
-
         }
-
     }
 
     private void enableMyLocation() {
@@ -186,7 +208,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             mGoogleMap.setMaxZoomPreference(18);
             mGoogleMap.setMinZoomPreference(15);
         }
-
     }
 
     protected void onDestroy() {
@@ -195,6 +216,5 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void update(Observable o, Object arg) {
-
     }
 }

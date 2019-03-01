@@ -124,7 +124,6 @@ public class LocationUpdateService extends Service implements GoogleApiClient.Co
         Log.i(LOG_LOCATION, "Connection suspended" + i);
     }
 
-
     @Override
     public void onLocationChanged(Location location) {
         // TODO send location to server when ready
