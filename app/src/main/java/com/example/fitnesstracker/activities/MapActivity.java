@@ -4,14 +4,11 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
@@ -19,9 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
-import com.akexorcist.googledirection.util.DirectionConverter;
 import com.example.fitnesstracker.R;
-import com.example.fitnesstracker.models.CoordinateModel;
 import com.example.fitnesstracker.utils.Constants;
 import com.example.fitnesstracker.utils.PermissionUtils;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -36,7 +31,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -44,12 +38,10 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener, Observer {
-    private ArrayList<CoordinateModel> mWalkedList = new ArrayList<>();
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private GoogleMap mGoogleMap;
     private Marker mMarker;
@@ -57,7 +49,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private LinearLayout linearLayout;
     private Chronometer chronometer;
     private TextView distance;
-    private long lastPause;
 
 
     @Override
@@ -124,11 +115,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 break;
             case R.id.stopButton:
                 mService.stopLocationUpdates();
-                lastPause = SystemClock.elapsedRealtime();
                 chronometer.stop();
-                mWalkedList.get(mWalkedList.size() - 1).setStop(true);
-                chronometer.setEnabled(false);
-                chronometer.setEnabled(true);
                 break;
             case R.id.continueButton:
                 chronometer.start();
@@ -155,7 +142,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         ServiceConnection serviceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-                mService = ((LocationUpdateService.LocalBinder) iBinder).getService();
                 mService.getLastLocation(new OnCompleteListener<Location>() {
                     @Override
                     public void onComplete(@NonNull Task<Location> task) {

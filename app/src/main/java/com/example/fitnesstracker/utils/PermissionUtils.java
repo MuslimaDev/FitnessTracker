@@ -7,8 +7,6 @@ import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 
-
-
 public final class PermissionUtils {
 
     public static boolean isLocationServicesEnabled(Context context) {

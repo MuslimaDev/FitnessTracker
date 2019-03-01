@@ -34,8 +34,8 @@ public class LocationUpdateService extends Service implements GoogleApiClient.Co
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private LocationRequest mLocationRequest;
 
-    public class LocalBinder extends Binder {
-        public LocationUpdateService getService() {
+    private class LocalBinder extends Binder {
+        private LocationUpdateService getService() {
             return LocationUpdateService.this;
         }
     }
@@ -91,7 +91,6 @@ public class LocationUpdateService extends Service implements GoogleApiClient.Co
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            //  Log.e(LOG_LOCATION, "stopLocationUpdates");
             mFusedLocationProviderClient.getLastLocation().addOnCompleteListener(onCompleteListener);
         }
     }
@@ -104,7 +103,6 @@ public class LocationUpdateService extends Service implements GoogleApiClient.Co
         Log.e(LOG_LOCATION, "setLocationReguestParams");
     }
 
-
     final LocationCallback mLocationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
@@ -115,7 +113,6 @@ public class LocationUpdateService extends Service implements GoogleApiClient.Co
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-
         Log.e(LOG_LOCATION, "onConnected");
     }
 
