@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Stepz</string>
     <string name="google_api_key">AIzaSyDQlbQN3jOmeUywMp4utk43RpsW4ucKdyc</string>
+    <string name="startButton">start</string>
+    <string name="continueButton">continue</string>
+    <string name="saveButton">save</string>
+    <string name="stopButton">stop</string>
 </resources>
