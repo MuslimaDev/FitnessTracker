@@ -6,6 +6,7 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 
 import com.example.fitnesstracker.R;
+import com.example.fitnesstracker.models.CoordinateModel;
 import com.example.fitnesstracker.utils.Constants;
 import com.example.fitnesstracker.utils.PermissionUtils;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -38,10 +40,12 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener, Observer {
+    private ArrayList<CoordinateModel> mWalkedList = new ArrayList<>();
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private GoogleMap mGoogleMap;
     private Marker mMarker;
@@ -49,6 +53,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private LinearLayout linearLayout;
     private Chronometer chronometer;
     private TextView distance;
+    private long lastPause;
 
 
     @Override
@@ -102,6 +107,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .icon(BitmapDescriptorFactory.defaultMarker());
         mGoogleMap.clear();
         mMarker = mGoogleMap.addMarker(options);
+
     }
 
     @Override
@@ -114,7 +120,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 chronometer.start();
                 break;
             case R.id.stopButton:
-                mService.stopLocationUpdates();
                 chronometer.stop();
                 break;
             case R.id.continueButton:
@@ -142,6 +147,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         ServiceConnection serviceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                mService = ((LocationUpdateService.LocalBinder) iBinder).getService();
                 mService.getLastLocation(new OnCompleteListener<Location>() {
                     @Override
                     public void onComplete(@NonNull Task<Location> task) {

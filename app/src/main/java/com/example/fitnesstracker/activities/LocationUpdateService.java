@@ -29,15 +29,19 @@ import org.greenrobot.eventbus.EventBus;
 public class LocationUpdateService extends Service implements GoogleApiClient.ConnectionCallbacks, LocationListener {
     private static final int INTERVAL = 10000;
     private static final int FASTEST_INTERVAL = 10000;
-    private final String LOG_LOCATION = " SERVICE_LOCATION";
+    private final String LOG_LOCATION = "SERVICE_LOCATION";
     private GoogleApiClient mGoogleApiClient;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private LocationRequest mLocationRequest;
 
-    private class LocalBinder extends Binder {
-        private LocationUpdateService getService() {
+    public class LocalBinder extends Binder {
+
+
+        public LocationUpdateService getService() {
             return LocationUpdateService.this;
         }
+
+
     }
 
     @Nullable
@@ -63,7 +67,7 @@ public class LocationUpdateService extends Service implements GoogleApiClient.Co
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e(LOG_LOCATION, " Log.e(LOG_LOCATION, \"onStartCommand\");");
+        Log.e(LOG_LOCATION, "Log.e(LOG_LOCATION, \"onStartCommand\");");
         if (mGoogleApiClient != null && !mGoogleApiClient.isConnected()) {
             mGoogleApiClient.connect();
         }
