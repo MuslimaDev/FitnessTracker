@@ -25,11 +25,11 @@
 
         </activity>
 
+        <activity android:name=".activities.RoutesHistory"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_api_key" />
-
 
         <service android:name=".activities.LocationUpdateService" />
 

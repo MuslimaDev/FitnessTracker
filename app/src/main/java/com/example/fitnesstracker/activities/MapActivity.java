@@ -10,6 +10,8 @@ import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
@@ -50,10 +52,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleMap mGoogleMap;
     private Marker mMarker;
     private Button startButton, continueButton, stopButton, saveButton;
-    private LinearLayout linearLayout;
     private Chronometer chronometer;
     private TextView distance;
-    private long lastPause;
+    private long pauseOffset;
 
 
     @Override
@@ -74,11 +75,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         saveButton = findViewById(R.id.saveButton);
         saveButton.setOnClickListener(this);
 
-        linearLayout = findViewById(R.id.linearLayout);
-
         distance = findViewById(R.id.distance);
+        distance.setText("  Distance: km  ");
 
         chronometer = findViewById(R.id.chronometer);
+        chronometer.setFormat("  Time: %s  ");
     }
 
     private void initMap() {
@@ -112,23 +113,28 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onClick(View v) {
-        switch(v.getId()){
+        switch (v.getId()) {
             case R.id.startButton:
                 stopButton.setVisibility(View.VISIBLE);
-                linearLayout.setVisibility(View.VISIBLE);
+                chronometer.setVisibility(View.VISIBLE);
                 distance.setVisibility(View.VISIBLE);
+                chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
                 chronometer.start();
                 break;
             case R.id.stopButton:
                 chronometer.stop();
+                pauseOffset = SystemClock.elapsedRealtime() - chronometer.getBase();
                 break;
             case R.id.continueButton:
+                chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
                 chronometer.start();
                 break;
             case R.id.saveButton:
                 stopButton.setVisibility(View.INVISIBLE);
-                linearLayout.setVisibility(View.INVISIBLE);
+                chronometer.setVisibility(View.INVISIBLE);
                 distance.setVisibility(View.INVISIBLE);
+                chronometer.setBase(SystemClock.elapsedRealtime());
+                pauseOffset = 0;
                 break;
         }
     }
@@ -208,5 +214,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void update(Observable o, Object arg) {
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item:
+                Intent intent = new Intent(this, RoutesHistory.class);
+                startActivityForResult(intent, 0);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
