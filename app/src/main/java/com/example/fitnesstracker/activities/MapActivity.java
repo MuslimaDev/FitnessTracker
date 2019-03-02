@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.IBinder;
 import android.os.SystemClock;
@@ -19,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
+import com.akexorcist.googledirection.util.DirectionConverter;
 import com.example.fitnesstracker.R;
 import com.example.fitnesstracker.models.CoordinateModel;
 import com.example.fitnesstracker.utils.Constants;
@@ -35,6 +37,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -76,7 +79,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         saveButton.setOnClickListener(this);
 
         distance = findViewById(R.id.distance);
-        distance.setText("  Distance: km  ");
+        distance.setText("  Distance: 0 km  ");
 
         chronometer = findViewById(R.id.chronometer);
         chronometer.setFormat("  Time: %s  ");
@@ -109,6 +112,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mGoogleMap.clear();
         mMarker = mGoogleMap.addMarker(options);
 
+        saveRoad(location);
+        countDistance();
     }
 
     @Override
@@ -208,6 +213,33 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+    private void drawRoute(ArrayList<CoordinateModel> routeList) {
+        ArrayList<LatLng> latLngs = new ArrayList<>();
+
+        for (Location location : routeList) {
+            latLngs.add(new LatLng(location.getLatitude(), location.getLongitude()));
+        }
+
+        PolylineOptions options = DirectionConverter.createPolyline(this, latLngs, 4, Color.parseColor("#38c404"));
+        mGoogleMap.addPolyline(options);
+    }
+
+    private void countDistance() {
+        double myDistance = 0;
+        for (int i = 0; i < mWalkedList.size() - 1; i++) {
+            if (!mWalkedList.get(i).isStop()) {
+                myDistance += mWalkedList.get(i).distanceTo(mWalkedList.get(i + 1));
+            }
+        }
+        distance.setText(String.format("  Distance: %.2f km  ", myDistance / 1000));
+    }
+
+    private void saveRoad(Location location) {
+        mWalkedList.add((new CoordinateModel(location)));
+        drawRoute(mWalkedList);
+    }
+
+
     protected void onDestroy() {
         super.onDestroy();
     }
@@ -216,20 +248,4 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void update(Observable o, Object arg) {
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.item:
-                Intent intent = new Intent(this, RoutesHistory.class);
-                startActivityForResult(intent, 0);
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }
