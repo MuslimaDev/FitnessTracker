@@ -53,7 +53,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private ArrayList<CoordinateModel> mWalkedList = new ArrayList<>();
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private GoogleMap mGoogleMap;
-    private Marker mMarker;
     private Button startButton, continueButton, stopButton, saveButton;
     private Chronometer chronometer;
     private TextView distance;
@@ -106,12 +105,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void locationRecived(Location location) {
-        MarkerOptions options = new MarkerOptions()
-                .position(new LatLng(location.getLatitude(), location.getLongitude()))
-                .icon(BitmapDescriptorFactory.defaultMarker());
-        mGoogleMap.clear();
-        mMarker = mGoogleMap.addMarker(options);
-
         saveRoad(location);
         countDistance();
     }
@@ -125,10 +118,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 distance.setVisibility(View.VISIBLE);
                 chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
                 chronometer.start();
+                mService.startLocationUpdates();
                 break;
             case R.id.stopButton:
                 chronometer.stop();
                 pauseOffset = SystemClock.elapsedRealtime() - chronometer.getBase();
+                mService.stopLocationUpdates();
                 break;
             case R.id.continueButton:
                 chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
@@ -247,5 +242,4 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void update(Observable o, Object arg) {
     }
-
 }
