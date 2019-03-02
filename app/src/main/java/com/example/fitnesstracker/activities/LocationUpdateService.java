@@ -35,13 +35,9 @@ public class LocationUpdateService extends Service implements GoogleApiClient.Co
     private LocationRequest mLocationRequest;
 
     public class LocalBinder extends Binder {
-
-
         public LocationUpdateService getService() {
             return LocationUpdateService.this;
         }
-
-
     }
 
     @Nullable
@@ -62,16 +58,13 @@ public class LocationUpdateService extends Service implements GoogleApiClient.Co
                 .addConnectionCallbacks(this)
                 .build();
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
-        Log.e(LOG_LOCATION, "initGoogleClient");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e(LOG_LOCATION, "Log.e(LOG_LOCATION, \"onStartCommand\");");
         if (mGoogleApiClient != null && !mGoogleApiClient.isConnected()) {
             mGoogleApiClient.connect();
         }
-        Log.e(LOG_LOCATION, "onStartCommand");
         return START_STICKY;
     }
 
@@ -79,22 +72,17 @@ public class LocationUpdateService extends Service implements GoogleApiClient.Co
     public void startLocationUpdates() {
         setLocationReguestParams();
         if (PermissionUtils.isLocationPermissionGranted(getApplicationContext())) {
-            mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest,
-                    mLocationCallback, Looper.myLooper());
-            Log.e(LOG_LOCATION, "startLocationUpdates");
+            mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
         }
     }
 
     public void stopLocationUpdates() {
         mFusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
         stopSelf();
-        Log.e(LOG_LOCATION, "stopLocationUpdates");
     }
 
     public void getLastLocation(OnCompleteListener<Location> onCompleteListener) {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mFusedLocationProviderClient.getLastLocation().addOnCompleteListener(onCompleteListener);
         }
     }
@@ -104,7 +92,6 @@ public class LocationUpdateService extends Service implements GoogleApiClient.Co
         mLocationRequest.setInterval(INTERVAL);
         mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        Log.e(LOG_LOCATION, "setLocationReguestParams");
     }
 
     final LocationCallback mLocationCallback = new LocationCallback() {
@@ -117,12 +104,10 @@ public class LocationUpdateService extends Service implements GoogleApiClient.Co
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Log.e(LOG_LOCATION, "onConnected");
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.i(LOG_LOCATION, "Connection suspended" + i);
     }
 
     @Override
@@ -136,7 +121,6 @@ public class LocationUpdateService extends Service implements GoogleApiClient.Co
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
             stopLocationUpdates();
-            Log.i(LOG_LOCATION, "onDestroy");
         }
         super.onDestroy();
     }
