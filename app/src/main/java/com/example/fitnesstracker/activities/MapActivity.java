@@ -11,6 +11,7 @@ import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
@@ -42,7 +43,7 @@ import java.util.Objects;
 import java.util.Observable;
 import java.util.Observer;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener, Observer {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener, Observer  {
     private ArrayList<CoordinateModel> mWalkedList = new ArrayList<>();
     private GoogleMap mGoogleMap;
     private Button stopButton;
@@ -70,7 +71,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         saveButton.setOnClickListener(this);
 
         distance = findViewById(R.id.distance);
-        distance.setText("  Distance: 0 km  ");
+        distance.setText("  Distance: 0,00 km  ");
 
         chronometer = findViewById(R.id.chronometer);
         chronometer.setFormat("  Time: %s  ");
@@ -125,8 +126,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 stopButton.setVisibility(View.INVISIBLE);
                 chronometer.setVisibility(View.INVISIBLE);
                 distance.setVisibility(View.INVISIBLE);
+                mService.stopLocationUpdates();
                 chronometer.setBase(SystemClock.elapsedRealtime());
+                chronometer.stop();
                 pauseOffset = 0;
+                mWalkedList.clear();
+                distance.setText("  Distance: 0,00 km  ");
                 break;
         }
     }
@@ -225,5 +230,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void update(Observable o, Object arg) {
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 }

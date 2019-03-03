@@ -5,4 +5,6 @@
     <string name="continueButton">continue</string>
     <string name="saveButton">save</string>
     <string name="stopButton">stop</string>
+    <string name="itemRoutes">Saved routes</string>
+    <string name="itemBluetooth">Connected devices</string>
 </resources>
