@@ -1,5 +1,11 @@
 <resources>
     <string name="app_name">Stepz</string>
-    <string name="mapbox_access_token">pk.eyJ1IjoibXVzbGltYTIyIiwiYSI6ImNqcmF1M2NoZTB0ams0NW1sbjBhOHdkMmIifQ.s2hHOWSDQjFX0FXi6ckSoA</string>
-
+    <string name="google_api_key">AIzaSyDQlbQN3jOmeUywMp4utk43RpsW4ucKdyc</string>
+    <string name="startButton">start</string>
+    <string name="continueButton">continue</string>
+    <string name="saveButton">save</string>
+    <string name="stopButton">stop</string>
+    <string name="itemRoutes">Saved routes</string>
+    <string name="itemBluetooth">Connected devices</string>
+    <string name="tvRoutes">SAVED ROUTES</string>
 </resources>
