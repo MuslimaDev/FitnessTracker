@@ -3,7 +3,7 @@ package com.example.fitnesstracker.models;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class Routes  extends RealmObject {
+public class Routes extends RealmObject {
 
     @PrimaryKey
     private int id;

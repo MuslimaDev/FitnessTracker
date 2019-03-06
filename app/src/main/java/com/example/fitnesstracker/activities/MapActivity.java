@@ -50,7 +50,7 @@ import java.util.Observer;
 
 import io.realm.Realm;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener, Observer  {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener, Observer {
     private ArrayList<CoordinateModel> mWalkedList = new ArrayList<>();
     private GoogleMap mGoogleMap;
     private Button stopButton;
@@ -139,7 +139,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 } else {
                     id = 0;
                 }
-                SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, HH:mm:ss" , Locale.US);
+                SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, HH:mm:ss", Locale.US);
                 String currentDateTime = sdf.format(new Date());
                 realm.beginTransaction();
                 Routes routes = realm.createObject(Routes.class, id);
