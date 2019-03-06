@@ -17,8 +17,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class RoutesAdapter extends RecyclerView.Adapter<RoutesAdapter.ViewHolder> {
-    List<Routes> items;
-
+    private List<Routes> items;
 
     RoutesAdapter(List<Routes> items, RoutesListActivity activity) {
         this.items = items;
@@ -44,11 +43,11 @@ public class RoutesAdapter extends RecyclerView.Adapter<RoutesAdapter.ViewHolder
         holder.delete.setTag(model.getId());
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
         TextView distance, time, date;
         ImageView delete;
 
-        public void deleteFromDataBase() {
+        void deleteFromDataBase() {
             Realm realm = Realm.getDefaultInstance();
             final RealmResults<Routes> mResults = realm.where(Routes.class).findAll();
             realm.executeTransaction(new Realm.Transaction() {
@@ -59,7 +58,7 @@ public class RoutesAdapter extends RecyclerView.Adapter<RoutesAdapter.ViewHolder
             });
         }
 
-        public ViewHolder(final View itemView) {
+        ViewHolder(final View itemView) {
             super(itemView);
             distance = itemView.findViewById(R.id.distance);
             time = itemView.findViewById(R.id.time);
