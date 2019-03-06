@@ -11,7 +11,6 @@ import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,7 +18,6 @@ import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import com.akexorcist.googledirection.util.DirectionConverter;
 import com.example.fitnesstracker.R;
@@ -45,32 +43,29 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Observable;
 import java.util.Observer;
 
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener, Observer  {
     private ArrayList<CoordinateModel> mWalkedList = new ArrayList<>();
     private GoogleMap mGoogleMap;
     private Button stopButton;
     private Chronometer chronometer;
-    private TextView distance;
+    private TextView distance, time, date;
     private long pauseOffset;
     private Realm realm;
-    private RealmConfiguration realmConfiguration;
 
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        initMap();
-
-        Realm.init(getApplicationContext());
         realm = Realm.getDefaultInstance();
+        initMap();
 
         Button startButton = findViewById(R.id.startButton);
         startButton.setOnClickListener(this);
@@ -137,16 +132,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 chronometer.start();
                 break;
             case R.id.saveButton:
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+                int id;
+                if (Realm.getDefaultInstance().where(Routes.class).max("id") != null) {
+                    Number number = Realm.getDefaultInstance().where(Routes.class).max("id");
+                    id = number.intValue() + 1;
+                } else {
+                    id = 0;
+                }
+                SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, HH:mm:ss" , Locale.US);
                 String currentDateTime = sdf.format(new Date());
                 realm.beginTransaction();
-                Routes routes = realm.createObject(Routes.class);
+                Routes routes = realm.createObject(Routes.class, id);
                 routes.setDistance(distance.getText().toString());
                 routes.setTime(chronometer.getText().toString());
                 routes.setDate(currentDateTime);
                 realm.commitTransaction();
-                Toast.makeText(this, "Results are saved", Toast.LENGTH_LONG).show();
-
+                Toast.makeText(this, "Result saved", Toast.LENGTH_LONG).show();
                 stopButton.setVisibility(View.INVISIBLE);
                 chronometer.setVisibility(View.INVISIBLE);
                 distance.setVisibility(View.INVISIBLE);

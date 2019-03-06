@@ -1,18 +1,30 @@
 package com.example.fitnesstracker.models;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
-public class Routes extends RealmObject {
-    private String date;
-    private String time;
+public class Routes  extends RealmObject {
+
+    @PrimaryKey
+    private int id;
     private String distance;
+    private String time;
+    private String date;
 
-    public String getDate() {
-        return date;
+    public int getId() {
+        return id;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getDistance() {
+        return distance;
+    }
+
+    public void setDistance(String distance) {
+        this.distance = distance;
     }
 
     public String getTime() {
@@ -23,11 +35,11 @@ public class Routes extends RealmObject {
         this.time = time;
     }
 
-    public String getDistance() {
-        return distance;
+    public String getDate() {
+        return date;
     }
 
-    public void setDistance(String distance) {
-        this.distance = distance;
+    public void setDate(String date) {
+        this.date = date;
     }
 }

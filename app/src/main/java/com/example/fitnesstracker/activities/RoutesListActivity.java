@@ -2,23 +2,31 @@ package com.example.fitnesstracker.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ListView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 
 import com.example.fitnesstracker.R;
 import com.example.fitnesstracker.models.Routes;
 
+import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class RoutesListActivity extends AppCompatActivity {
-    RoutesAdapter adapter;
+
+    Realm mRealm;
+    RoutesAdapter mAdapter;
     RealmResults<Routes> results;
-    ListView listView;
+    RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mRealm = Realm.getDefaultInstance();
         setContentView(R.layout.activity_routes);
-        listView = findViewById(R.id.listView);
-        listView.setAdapter(adapter = new RoutesAdapter(RoutesListActivity.this, results));
+        recyclerView = findViewById(R.id.recyclerView);
+        results = Realm.getDefaultInstance().where(Routes.class).findAllSorted("id");
+        recyclerView.setAdapter(mAdapter = new RoutesAdapter(results, RoutesListActivity.this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
+
 }
