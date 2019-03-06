@@ -68,7 +68,7 @@ public class LocationUpdateService extends Service implements GoogleApiClient.Co
 
     @SuppressLint("MissingPermission")
     public void startLocationUpdates() {
-        setLocationReguestParams();
+        setLocationRequestParams();
         if (PermissionUtils.isLocationPermissionGranted(getApplicationContext())) {
             mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
         }
@@ -85,7 +85,7 @@ public class LocationUpdateService extends Service implements GoogleApiClient.Co
         }
     }
 
-    private void setLocationReguestParams() {
+    private void setLocationRequestParams() {
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setInterval(INTERVAL);
         mLocationRequest.setFastestInterval(FASTEST_INTERVAL);

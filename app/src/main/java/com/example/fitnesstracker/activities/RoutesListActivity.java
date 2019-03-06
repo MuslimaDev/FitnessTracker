@@ -28,5 +28,4 @@ public class RoutesListActivity extends AppCompatActivity {
         recyclerView.setAdapter(mAdapter = new RoutesAdapter(results, RoutesListActivity.this));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
-
 }
