@@ -55,7 +55,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleMap mGoogleMap;
     private Button stopButton;
     private Chronometer chronometer;
-    private TextView distance, time, date;
+    private TextView distance;
     private long pauseOffset;
     private Realm realm;
 
