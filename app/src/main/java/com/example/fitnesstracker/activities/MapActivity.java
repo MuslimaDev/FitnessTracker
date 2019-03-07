@@ -130,6 +130,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             case R.id.continueButton:
                 chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
                 chronometer.start();
+                mService.startLocationUpdates();
                 break;
             case R.id.saveButton:
                 int id;
@@ -271,6 +272,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 Intent intent = new Intent(this, RoutesListActivity.class);
                 startActivityForResult(intent, 0);
                 break;
+            case R.id.itemBluetooth:
+                Intent intentTwo = new Intent(this, BluetoothActivity.class);
+                startActivityForResult(intentTwo, 0);
         }
         return super.onOptionsItemSelected(item);
     }

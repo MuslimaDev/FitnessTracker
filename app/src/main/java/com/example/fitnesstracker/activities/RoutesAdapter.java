@@ -13,14 +13,13 @@ import com.example.fitnesstracker.models.Routes;
 
 import java.util.List;
 
-import io.realm.Realm;
-import io.realm.RealmResults;
-
 public class RoutesAdapter extends RecyclerView.Adapter<RoutesAdapter.ViewHolder> {
     private List<Routes> items;
+    private CallBackRealm mCallBackRealm;
 
-    RoutesAdapter(List<Routes> items, RoutesListActivity activity) {
+    RoutesAdapter(List<Routes> items, CallBackRealm callBackRealm) {
         this.items = items;
+        this.mCallBackRealm =  callBackRealm;
     }
 
     @Override
@@ -47,17 +46,6 @@ public class RoutesAdapter extends RecyclerView.Adapter<RoutesAdapter.ViewHolder
         TextView distance, time, date;
         ImageView delete;
 
-        void deleteFromDataBase() {
-            Realm realm = Realm.getDefaultInstance();
-            final RealmResults<Routes> mResults = realm.where(Routes.class).findAll();
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    mResults.deleteFromRealm(0);
-                }
-            });
-        }
-
         ViewHolder(final View itemView) {
             super(itemView);
             distance = itemView.findViewById(R.id.distance);
@@ -65,10 +53,11 @@ public class RoutesAdapter extends RecyclerView.Adapter<RoutesAdapter.ViewHolder
             date = itemView.findViewById(R.id.date);
             delete = itemView.findViewById(R.id.delete);
 
-            delete.setOnClickListener(new View.OnClickListener() {
+            delete.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
-                public void onClick(View view) {
-                    deleteFromDataBase();
+                public boolean onLongClick(View view) {
+                    mCallBackRealm.deleteRealmObject(items, (int)view.getTag());
+                    return false;
                 }
             });
         }
