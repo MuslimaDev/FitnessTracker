@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.example.fitnesstracker.R;
+import com.example.fitnesstracker.interfaces.CallBackRealm;
 import com.example.fitnesstracker.models.Routes;
 
 import java.util.List;
@@ -19,11 +20,8 @@ import io.realm.RealmResults;
 
 public class RoutesListActivity extends AppCompatActivity  implements CallBackRealm {
 
-    Realm mRealm;
-    RoutesAdapter mAdapter;
-    RealmResults<Routes> results;
-    RecyclerView recyclerView;
-    Toolbar toolbar;
+    private Realm mRealm;
+    private RoutesAdapter mAdapter;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,8 +32,8 @@ public class RoutesListActivity extends AppCompatActivity  implements CallBackRe
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        recyclerView = findViewById(R.id.recyclerView);
-        results = Realm.getDefaultInstance().where(Routes.class).findAllSorted("id");
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        RealmResults<Routes> results = Realm.getDefaultInstance().where(Routes.class).findAllSorted("id");
         recyclerView.setAdapter(mAdapter = new RoutesAdapter(results, RoutesListActivity.this));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
