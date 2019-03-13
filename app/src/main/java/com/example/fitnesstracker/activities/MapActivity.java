@@ -121,6 +121,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
                 chronometer.start();
                 mService.startLocationUpdates();
+                DataHandler.getInstance().addObserver(this);
                 break;
             case R.id.stopButton:
                 chronometer.stop();
@@ -173,7 +174,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     LocationUpdateService mService;
 
     private void startLocationService() {
-
         ServiceConnection serviceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -253,11 +253,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     protected void onDestroy() {
         super.onDestroy();
+        DataHandler.getInstance().deleteObserver(this);
     }
 
     @Override
-    public void update(Observable o, Object arg) {
-    }
+    public void update(Observable observable, Object o) {}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -271,6 +271,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             case R.id.itemRoutes:
                 Intent intent = new Intent(this, RoutesListActivity.class);
                 startActivityForResult(intent, 0);
+                break;
+            case R.id.itemBluetooth:
+                Intent intentBluetooth = new Intent(this, BluetoothActivity.class);
+                startActivityForResult(intentBluetooth, 0);
                 break;
         }
         return super.onOptionsItemSelected(item);

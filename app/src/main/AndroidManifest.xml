@@ -35,6 +35,7 @@
 
         <activity android:name=".activities.RoutesListActivity"/>
 
+        <activity android:name=".activities.BluetoothActivity"/>
     </application>
 
 </manifest>

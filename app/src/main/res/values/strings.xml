@@ -9,4 +9,20 @@
     <string name="itemBluetooth">Connected devices</string>
     <string name="tvRoutes">SAVED ROUTES</string>
     <string name="connectedDevices">Connected devices:</string>
+
+    <string name="on">on</string>
+    <string name="off">off</string>
+    <string name="discover">Discover</string>
+    <string name="enablediscover">EnableDiscover</string>
+    <string name="enable_discover">enable discover</string>
+    <string name="start_connection">start Connection</string>
+    <string name="couldnotconnect" >Couldnt connect</string>
+    <string name="bluetooth" >Bluetooth connection </string>
+    <string name="bluetoothOff" > Switch on?</string>
+
+    <string name="avg" />
+    <string name="max" />
+    <string name="min" />
+    <string name="rpm" />
+    <string name="selectDevice"> Select Device</string>
 </resources>
