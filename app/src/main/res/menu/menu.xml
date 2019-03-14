@@ -2,9 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/itemRoutes"
-        android:title="@string/itemRoutes"></item>
+        android:title="@string/itemRoutes" />
 
     <item
         android:id="@+id/itemBluetooth"
-        android:title="@string/itemBluetooth"></item>
+        android:title="@string/itemBluetooth" />
 </menu>

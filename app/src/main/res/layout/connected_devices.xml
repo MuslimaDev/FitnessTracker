@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -11,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="15dp"
-        android:text="CONNECTED DEVICES"
+        android:text="@string/connectedDevices"
         android:textColor="#fff"
         android:textSize="25sp"
         android:textStyle="italic"
@@ -28,7 +29,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView"
-        android:layout_marginTop="15dp"/>
+        android:layout_marginTop="15dp"
+        tools:ignore="ContentDescription" />
 
     <LinearLayout
         android:id="@+id/container"
@@ -50,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:paddingTop="20dp"
-            android:text="REVOLUTIONS PER MINUTE"
+            android:text="@string/rpm"
             android:textColor="#fff"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textSize="21sp" />
@@ -63,19 +65,20 @@
             android:paddingTop="20dp"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="#fff"
-            android:textSize="16dp"/>
+            android:textSize="16sp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="46dp"
-            android:layout_gravity="center">
+            android:layout_gravity="center"
+            android:layout_marginTop="30dp">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="MINIMUM"
+                android:text="@string/min"
                 android:textColor="#fff"
                 android:textSize="21sp" />
 
@@ -84,7 +87,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="AVERAGE"
+                android:text="@string/avg"
                 android:textColor="#fff"
                 android:textSize="21sp" />
 
@@ -93,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="MAXIMUM"
+                android:text="@string/max"
                 android:textColor="#fff"
                 android:textSize="21sp" />
         </LinearLayout>

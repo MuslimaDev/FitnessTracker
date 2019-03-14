@@ -1,30 +1,30 @@
 package com.example.fitnesstracker.activities;
 
-import java.io.IOException;
-import java.util.UUID;
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 
-public class ConnectThread extends Thread {
-    BluetoothAdapter bluetoothAdapter;
-    private final BluetoothSocket socket;
-    BluetoothActivity activity;
+import java.io.IOException;
+import java.util.UUID;
 
-    public ConnectThread(BluetoothDevice device, BluetoothActivity ac) {
-        this.activity = ac;
-        BluetoothSocket tmp = null;
+public class ConnectionThread extends Thread {
+    private BluetoothAdapter bluetoothAdapter;
+    private final BluetoothSocket socket;
+    private BluetoothActivity activity;
+
+    ConnectionThread(BluetoothDevice device, BluetoothActivity bluetoothActivity) {
+        this.activity = bluetoothActivity;
+        BluetoothSocket bluetoothSocket = null;
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         try {
-            UUID MY_UUID = UUID.fromString("d8336105-1bd9-4b0b-88b0-f7644dafb19d");
-            tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
+            UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+            bluetoothSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
         } catch (IOException ignored) {
-            Log.e("ConnectThread", "Error on getting the device");
+            Log.e("ConnectionThread", "Error on getting the device");
         }
-        socket = tmp;
+        socket = bluetoothSocket;
     }
 
     public void run() {
@@ -45,7 +45,7 @@ public class ConnectThread extends Thread {
                     try {
                         socket.close();
                     } catch (IOException closeException) {
-                        Log.e("ConnectThread", "Error on getting the stack");
+                        Log.e("ConnectionThread", "Error on getting the stack");
                     }
                     return;
                 }
@@ -61,7 +61,7 @@ public class ConnectThread extends Thread {
                     socket.getInputStream().close();
                     socket.close();
                 } catch (IOException closeException) {
-                    Log.e("ConnectThread", "Error on getting the stack");
+                    Log.e("ConnectionThread", "Error on getting the stack");
                 }
                 return;
             }
@@ -73,7 +73,7 @@ public class ConnectThread extends Thread {
             if (socket != null && socket.isConnected())
                 socket.close();
         } catch (IOException e) {
-            Log.e("ConnectThread", "Error on closing bluetooth");
+            Log.e("ConnectionThread", "Error on closing bluetooth");
         }
     }
 }

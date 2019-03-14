@@ -3,91 +3,90 @@ package com.example.fitnesstracker.activities;
 import java.util.Observable;
 
 public class DataHandler extends Observable {
-    private static DataHandler dataHandler = new DataHandler();
+    private static DataHandler handler = new DataHandler();
     boolean newValue = true;
-    ConnectThread reader;
-    H7ConnectThread H7;
-
-    int pos, val, min, max, data, total = 0;
-    int id;
+    private ConnectionThread reader;
+    private DeviceConnectionThread H7;
+    private int position, value, minimum, maximum, data, total = 0;
+    private int id;
 
     private DataHandler() {
     }
 
-    public static DataHandler getInstance() {
-        return dataHandler;
+    static DataHandler getInstance() {
+        return handler;
     }
 
-    public void acqui(int i) {
+    void acqui(int i) {
         if (i == 254) {
-            pos = 0;
-        } else if (pos == 5) {
+            position = 0;
+        } else if (position == 5) {
             cleanInput(i);
         }
-        pos++;
+        position++;
     }
 
-    public void cleanInput(int i) {
-        val = i;
-        if (val != 0) {
-            data += val;
+    void cleanInput(int i) {
+        value = i;
+        if (value != 0) {
+            data += value;
             total++;
         }
-        if (val < min || min == 0)
-            min = val;
-        else if (val > max)
-            max = val;
+        if (value < minimum || minimum == 0)
+            minimum = value;
+        else if (value > maximum)
+            maximum = value;
         setChanged();
         notifyObservers();
     }
 
-    public String getLastValue() {
-        return val + " BPM";
+    String getLastValue() {
+        return value + " BPM";
     }
 
     public int getLastIntValue() {
-        return val;
+        return value;
     }
 
-    public String getMin() {
-        return "Min " + min + " BPM";
+    String getMin() {
+        return minimum + " BPM";
     }
 
-    public String getMax() {
-        return "Max " + max + " BPM";
+    String getMax() {
+        return maximum + " BPM";
     }
 
-    public String getAvg() {
+    String getAvg() {
         if (total == 0)
-            return "Avg " + 0 + " BPM";
-        return "Avg " + data / total + " BPM";
+            return 0 + " BPM";
+        return data / total + " BPM";
     }
 
     public void setNewValue(boolean newValue) {
         this.newValue = newValue;
     }
 
-    public ConnectThread getReader() {
+    ConnectionThread getReader() {
         return reader;
     }
 
-    public void setReader(ConnectThread reader) {
+    void setReader(ConnectionThread reader) {
         this.reader = reader;
     }
 
-    public int getID() {
+    int getID() {
         return id;
     }
 
-    public void setID(int id) {
+    void setID(int id) {
         this.id = id;
     }
 
-    public void setH7(H7ConnectThread H7) {
+    void setH7(DeviceConnectionThread H7) {
         this.H7 = H7;
     }
 
-    public H7ConnectThread getH7() {
+    DeviceConnectionThread getH7() {
         return H7;
     }
 }
