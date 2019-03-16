@@ -1,4 +1,4 @@
-package com.example.fitnesstracker.activities;
+package com.example.fitnesstracker.activities.bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -13,7 +13,7 @@ public class ConnectionThread extends Thread {
     private final BluetoothSocket socket;
     private BluetoothActivity activity;
 
-    ConnectionThread(BluetoothDevice device, BluetoothActivity bluetoothActivity) {
+    public ConnectionThread(BluetoothDevice device, BluetoothActivity bluetoothActivity) {
         this.activity = bluetoothActivity;
         BluetoothSocket bluetoothSocket = null;
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();

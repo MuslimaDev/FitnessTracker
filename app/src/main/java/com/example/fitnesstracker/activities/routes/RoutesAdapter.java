@@ -1,4 +1,4 @@
-package com.example.fitnesstracker.activities;
+package com.example.fitnesstracker.activities.routes;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;

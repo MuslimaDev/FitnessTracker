@@ -1,4 +1,4 @@
-package com.example.fitnesstracker.activities;
+package com.example.fitnesstracker.activities.bluetooth;
 
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.fitnesstracker.R;
+import com.example.fitnesstracker.activities.MapActivity;
 
 import java.util.ArrayList;
 import java.util.List;

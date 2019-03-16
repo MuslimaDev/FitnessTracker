@@ -21,6 +21,9 @@ import android.widget.Toast;
 
 import com.akexorcist.googledirection.util.DirectionConverter;
 import com.example.fitnesstracker.R;
+import com.example.fitnesstracker.activities.bluetooth.BluetoothActivity;
+import com.example.fitnesstracker.activities.bluetooth.DataHandler;
+import com.example.fitnesstracker.activities.routes.RoutesListActivity;
 import com.example.fitnesstracker.models.CoordinateModel;
 import com.example.fitnesstracker.models.Routes;
 import com.example.fitnesstracker.utils.Constants;
@@ -121,6 +124,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
                 chronometer.start();
                 mService.startLocationUpdates();
+                drawRoute(mWalkedList);
                 DataHandler.getInstance().addObserver(this);
                 break;
             case R.id.stopButton:

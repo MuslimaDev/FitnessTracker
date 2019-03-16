@@ -1,10 +1,10 @@
-package com.example.fitnesstracker.activities;
+package com.example.fitnesstracker.activities.bluetooth;
 
 import java.util.Observable;
 
 public class DataHandler extends Observable {
     private static DataHandler handler = new DataHandler();
-    boolean newValue = true;
+    public boolean newValue = true;
     private ConnectionThread reader;
     private DeviceConnectionThread H7;
     private int position, value, minimum, maximum, data, total = 0;
@@ -13,7 +13,7 @@ public class DataHandler extends Observable {
     private DataHandler() {
     }
 
-    static DataHandler getInstance() {
+    public static DataHandler getInstance() {
         return handler;
     }
 
@@ -26,7 +26,7 @@ public class DataHandler extends Observable {
         position++;
     }
 
-    void cleanInput(int i) {
+    public void cleanInput(int i) {
         value = i;
         if (value != 0) {
             data += value;
@@ -40,7 +40,7 @@ public class DataHandler extends Observable {
         notifyObservers();
     }
 
-    String getLastValue() {
+    public String getLastValue() {
         return value + " BPM";
     }
 
@@ -48,15 +48,15 @@ public class DataHandler extends Observable {
         return value;
     }
 
-    String getMin() {
+    public String getMin() {
         return minimum + " BPM";
     }
 
-    String getMax() {
+    public String getMax() {
         return maximum + " BPM";
     }
 
-    String getAvg() {
+    public String getAvg() {
         if (total == 0)
             return 0 + " BPM";
         return data / total + " BPM";
@@ -66,27 +66,27 @@ public class DataHandler extends Observable {
         this.newValue = newValue;
     }
 
-    ConnectionThread getReader() {
+    public ConnectionThread getReader() {
         return reader;
     }
 
-    void setReader(ConnectionThread reader) {
+    public void setReader(ConnectionThread reader) {
         this.reader = reader;
     }
 
-    int getID() {
+    public int getID() {
         return id;
     }
 
-    void setID(int id) {
+    public void setID(int id) {
         this.id = id;
     }
 
-    void setH7(DeviceConnectionThread H7) {
+    public void setH7(DeviceConnectionThread H7) {
         this.H7 = H7;
     }
 
-    DeviceConnectionThread getH7() {
+    public DeviceConnectionThread getH7() {
         return H7;
     }
 }

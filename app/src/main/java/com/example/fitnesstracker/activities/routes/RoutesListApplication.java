@@ -1,4 +1,4 @@
-package com.example.fitnesstracker.activities;
+package com.example.fitnesstracker.activities.routes;
 
 import android.app.Application;
 
