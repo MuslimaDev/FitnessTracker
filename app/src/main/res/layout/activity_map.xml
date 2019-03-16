@@ -74,10 +74,10 @@
         android:layout_marginBottom="7dp"
         android:background="@drawable/corner"
         android:textColor="#fff"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/distance"
         app:layout_constraintLeft_toLeftOf="@+id/map"
-        app:layout_constraintRight_toRightOf="@id/map"
-        android:visibility="gone"/>
+        app:layout_constraintRight_toRightOf="@id/map" />
 
 
     <TextView
@@ -87,8 +87,8 @@
         android:layout_marginBottom="20dp"
         android:background="@drawable/corner"
         android:textColor="#fff"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/startButton"
         app:layout_constraintLeft_toLeftOf="@+id/map"
-        app:layout_constraintRight_toRightOf="@id/map"
-        android:visibility="gone"/>
+        app:layout_constraintRight_toRightOf="@id/map" />
 </android.support.constraint.ConstraintLayout>

@@ -8,4 +8,14 @@
     <string name="itemRoutes">Saved routes</string>
     <string name="itemBluetooth">Connected devices</string>
     <string name="tvRoutes">SAVED ROUTES</string>
+    <string name="connectedDevices">CONNECTED DEVICES</string>
+    <string name="on">ON</string>
+    <string name="off">OFF</string>
+    <string name="couldnotconnect" >Could not connect</string>
+    <string name="bluetooth" >Bluetooth connection </string>
+    <string name="bluetoothOff" >Application is requesting permission to turn on Bluetooth. Allow ?</string>
+    <string name="avg">AVERAGE</string>
+    <string name="max">MAXIMUM</string>
+    <string name="min">MINIMUM</string>
+    <string name="rpm">REVOLUTIONS PER MINUTE</string>
 </resources>

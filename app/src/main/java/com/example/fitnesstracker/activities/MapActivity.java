@@ -12,15 +12,20 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.TextView;
-
+import android.widget.Toast;
 
 import com.akexorcist.googledirection.util.DirectionConverter;
 import com.example.fitnesstracker.R;
+import com.example.fitnesstracker.activities.bluetooth.BluetoothActivity;
+import com.example.fitnesstracker.activities.bluetooth.DataHandler;
+import com.example.fitnesstracker.activities.routes.RoutesListActivity;
 import com.example.fitnesstracker.models.CoordinateModel;
+import com.example.fitnesstracker.models.Routes;
 import com.example.fitnesstracker.utils.Constants;
 import com.example.fitnesstracker.utils.PermissionUtils;
 
@@ -38,24 +43,31 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Observable;
 import java.util.Observer;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener, Observer  {
+import io.realm.Realm;
+
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener, Observer {
     private ArrayList<CoordinateModel> mWalkedList = new ArrayList<>();
     private GoogleMap mGoogleMap;
     private Button stopButton;
     private Chronometer chronometer;
     private TextView distance;
     private long pauseOffset;
+    private Realm realm;
 
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        realm = Realm.getDefaultInstance();
         initMap();
 
         Button startButton = findViewById(R.id.startButton);
@@ -112,6 +124,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
                 chronometer.start();
                 mService.startLocationUpdates();
+                drawRoute(mWalkedList);
+                DataHandler.getInstance().addObserver(this);
                 break;
             case R.id.stopButton:
                 chronometer.stop();
@@ -121,8 +135,25 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             case R.id.continueButton:
                 chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
                 chronometer.start();
+                mService.startLocationUpdates();
                 break;
             case R.id.saveButton:
+                int id;
+                if (Realm.getDefaultInstance().where(Routes.class).max("id") != null) {
+                    Number number = Realm.getDefaultInstance().where(Routes.class).max("id");
+                    id = number.intValue() + 1;
+                } else {
+                    id = 0;
+                }
+                SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, HH:mm:ss", Locale.US);
+                String currentDateTime = sdf.format(new Date());
+                realm.beginTransaction();
+                Routes routes = realm.createObject(Routes.class, id);
+                routes.setDistance(distance.getText().toString());
+                routes.setTime(chronometer.getText().toString());
+                routes.setDate(currentDateTime);
+                realm.commitTransaction();
+                Toast.makeText(this, "Result saved", Toast.LENGTH_LONG).show();
                 stopButton.setVisibility(View.INVISIBLE);
                 chronometer.setVisibility(View.INVISIBLE);
                 distance.setVisibility(View.INVISIBLE);
@@ -131,6 +162,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 chronometer.stop();
                 pauseOffset = 0;
                 mWalkedList.clear();
+                mGoogleMap.clear();
                 distance.setText("  Distance: 0,00 km  ");
                 break;
         }
@@ -146,7 +178,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     LocationUpdateService mService;
 
     private void startLocationService() {
-
         ServiceConnection serviceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -226,15 +257,30 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     protected void onDestroy() {
         super.onDestroy();
+        DataHandler.getInstance().deleteObserver(this);
     }
 
     @Override
-    public void update(Observable o, Object arg) {
-    }
+    public void update(Observable observable, Object o) {}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.itemRoutes:
+                Intent intent = new Intent(this, RoutesListActivity.class);
+                startActivityForResult(intent, 0);
+                break;
+            case R.id.itemBluetooth:
+                Intent intentBluetooth = new Intent(this, BluetoothActivity.class);
+                startActivityForResult(intentBluetooth, 0);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
