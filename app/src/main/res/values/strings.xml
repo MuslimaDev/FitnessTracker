@@ -8,4 +8,5 @@
     <string name="itemRoutes">Saved routes</string>
     <string name="itemBluetooth">Connected devices</string>
     <string name="tvRoutes">SAVED ROUTES</string>
+    <string name="connectedDevices">Connected devices:</string>
 </resources>
